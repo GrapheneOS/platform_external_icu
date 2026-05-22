@@ -698,10 +698,13 @@ public final class ZoneInfoData {
             }
         }
 
-        if (lastDstTransitionIndex != -1) {
+        // `lastDstTransitionIndex == mTransitions.length - 1` means that the last transition's
+        // type is DST and this time zone is permanently in DST. So check below is
+        // "time zone observes DST and the last transition is standard time".
+        if (lastDstTransitionIndex != -1 && lastDstTransitionIndex < mTransitions.length - 1) {
             // Check to see if the last DST transition is in the future or the past. If it is in
-            // the past then we treat it as if it doesn't exist, at least for the purposes of
-            // TimeZone#useDaylightTime() and #getDSTSavings()
+            // the past and not currently active then we treat it as if it doesn't exist, at
+            // least for the purposes of TimeZone#useDaylightTime() and #getDSTSavings()
             long lastDSTTransitionTime = mTransitions[lastDstTransitionIndex];
 
             // Convert the current time in millis into seconds. Unlike other places that convert
